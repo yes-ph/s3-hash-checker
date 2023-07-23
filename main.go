@@ -27,15 +27,17 @@ func main() {
 	}
 	svc := s3.NewFromConfig(cfg)
 
-	args := os.Args[1:]
+	args := os.Args
+	if len(args) < 3 {
+		log.Fatalf("Usage: s3-hash-checker s3://my-s3-bucket/fileKey localFile\n")
+	}
+	args = args[1:]
 
 	r := regexp.MustCompile(`s3://([^/]+)/(.*)`)
 	matches := r.FindStringSubmatch(args[0])
-
 	if len(matches) < 3 {
 		log.Fatalf("invalid s3 file\n")
 	}
-
 	matches = matches[1:]
 
 	attribs, err := svc.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
