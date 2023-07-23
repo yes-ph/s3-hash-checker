@@ -40,14 +40,26 @@ func main() {
 	}
 	matches = matches[1:]
 
-	attribs, err := svc.GetObjectAttributes(context.TODO(), &s3.GetObjectAttributesInput{
+	ctx := context.TODO()
+
+	inputAttrib := &s3.GetObjectAttributesInput{
 		Bucket: stringPtr(matches[0]),
 		Key:    stringPtr(matches[1]),
 		ObjectAttributes: []types.ObjectAttributes{
 			types.ObjectAttributesChecksum,
 			types.ObjectAttributesObjectParts,
 		},
-	})
+	}
+
+	headAttribs, err := svc.GetObjectAttributes(ctx, inputAttrib)
+	if err != nil {
+		log.Fatal(err)
+	}
+	totalParts := headAttribs.ObjectParts.TotalPartsCount
+	fmt.Printf("Total parts: %v\n", totalParts)
+	inputAttrib.MaxParts = totalParts
+
+	attribs, err := svc.GetObjectAttributes(ctx, inputAttrib)
 	if err != nil {
 		log.Fatal(err)
 	}
