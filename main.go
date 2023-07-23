@@ -55,6 +55,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if headAttribs.ObjectParts == nil {
+		log.Fatalf("not a multi-part file")
+	}
 	totalParts := headAttribs.ObjectParts.TotalPartsCount
 	fmt.Printf("Total parts: %v\n", totalParts)
 	inputAttrib.MaxParts = totalParts
